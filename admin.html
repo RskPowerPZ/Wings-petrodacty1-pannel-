@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Review Rise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-yellow-400">ADMIN DASHBOARD</h1>
+            <div class="flex space-x-4">
+                <a href="/" class="text-gray-300 hover:text-white transition-colors">Open Site</a>
+                <button onclick="logout()" class="text-gray-300 hover:text-white transition-colors">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Settings Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Update Map Link / Task</h2>
+            <div class="flex space-x-4">
+                <input type="text" id="mapLinkInput" placeholder="Enter new map link" class="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none">
+                <button onclick="updateMapLink()" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">Update</button>
+            </div>
+            <p class="text-gray-400 text-sm mt-2">Current Task: <span id="currentMapLink">Loading...</span></p>
+        </div>
+
+        <!-- YouTube Link Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Update YouTube Video Link</h2>
+            <div class="flex space-x-4">
+                <input type="text" id="youtubeLinkInput" placeholder="Enter new YouTube link" class="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-yellow-400 focus:outline-none">
+                <button onclick="updateYouTubeLink()" class="bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">Update</button>
+            </div>
+            <p class="text-gray-400 text-sm mt-2">Current Video: <span id="currentYouTubeLink">Loading...</span></p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-blue-600 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold" id="adminTotalCount">0</div>
+                <div class="text-sm opacity-90">Total</div>
+            </div>
+            <div class="bg-green-600 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold" id="adminApprovedCount">0</div>
+                <div class="text-sm opacity-90">Approved</div>
+            </div>
+            <div class="bg-yellow-600 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold" id="adminPaidCount">0</div>
+                <div class="text-sm opacity-90">Paid</div>
+            </div>
+            <div class="bg-red-600 rounded-lg p-4 text-center">
+                <div class="text-2xl font-bold" id="adminRejectedCount">0</div>
+                <div class="text-sm opacity-90">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Submissions Section -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">All Submissions (<span id="submissionCount">0</span>)</h2>
+            <div id="submissionsList" class="space-y-4">
+                <!-- Submissions will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50" onclick="closeImageModal()">
+        <div class="max-w-4xl max-h-full p-4">
+            <img id="modalImage" class="max-w-full max-h-full object-contain rounded-lg">
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            loadSubmissions();
+            loadStats();
+        });
+
+        // Load current settings
+        async function loadSettings() {
+            try {
+                const mapResponse = await fetch(`${API_BASE}/settings/mapLink`);
+                const mapData = await mapResponse.json();
+                if (mapData.value) {
+                    document.getElementById('currentMapLink').textContent = mapData.value;
+                    document.getElementById('mapLinkInput').value = mapData.value;
+                }
+
+                const videoResponse = await fetch(`${API_BASE}/settings/youtubeLink`);
+                const videoData = await videoResponse.json();
+                if (videoData.value) {
+                    document.getElementById('currentYouTubeLink').textContent = videoData.value;
+                    document.getElementById('youtubeLinkInput').value = videoData.value;
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // Load submissions
+        async function loadSubmissions() {
+            try {
+                const response = await fetch(`${API_BASE}/submissions`);
+                const submissions = await response.json();
+                
+                const submissionsList = document.getElementById('submissionsList');
+                const submissionCount = document.getElementById('submissionCount');
+                
+                submissionCount.textContent = submissions.length;
+                
+                if (submissions.length === 0) {
+                    submissionsList.innerHTML = '<p class="text-gray-400 text-center py-8">No submissions yet</p>';
+                    return;
+                }
+                
+                submissionsList.innerHTML = submissions.map((submission, index) => `
+                    <div class="bg-gray-700 rounded-lg p-4 border-l-4 ${getStatusColor(submission.status)}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-semibold text-lg">${submission.fullName}</h3>
+                                <p class="text-yellow-400">${submission.upiId}</p>
+                                <p class="text-gray-400 text-sm">${formatDate(submission.createdAt)}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(submission.status)}">
+                                    ${submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                                </span>
+                                <p class="text-gray-400 text-sm mt-1">#${index}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <img src="${submission.screenshot}" alt="Screenshot" class="w-32 h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageModal('${submission.screenshot}')">
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2">
+                            ${submission.status === 'pending' ? `
+                                <button onclick="updateSubmission(${submission.id}, 'approve')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-check mr-1"></i> Approve
+                                </button>
+                                <button onclick="updateSubmission(${submission.id}, 'reject')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-times mr-1"></i> Reject
+                                </button>
+                            ` : ''}
+                            ${submission.status === 'approved' ? `
+                                <button onclick="updateSubmission(${submission.id}, 'paid')" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-money-bill mr-1"></i> Mark Paid
+                                </button>
+                            ` : ''}
+                            <button onclick="updateSubmission(${submission.id}, 'delete')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-trash mr-1"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('adminTotalCount').textContent = stats.total || 0;
+                document.getElementById('adminApprovedCount').textContent = stats.approved || 0;
+                document.getElementById('adminPaidCount').textContent = stats.paid || 0;
+                document.getElementById('adminRejectedCount').textContent = stats.rejected || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Update map link
+        async function updateMapLink() {
+            const newLink = document.getElementById('mapLinkInput').value.trim();
+            if (!newLink) {
+                alert('Please enter a valid map link');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/settings/mapLink`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ value: newLink })
+                });
+
+                if (response.ok) {
+                    document.getElementById('currentMapLink').textContent = newLink;
+                    showToast('Map link updated successfully!');
+                } else {
+                    throw new Error('Failed to update map link');
+                }
+            } catch (error) {
+                alert('Error updating map link: ' + error.message);
+            }
+        }
+
+        // Update YouTube link
+        async function updateYouTubeLink() {
+            const newLink = document.getElementById('youtubeLinkInput').value.trim();
+            if (!newLink) {
+                alert('Please enter a valid YouTube link');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/settings/youtubeLink`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ value: newLink })
+                });
+
+                if (response.ok) {
+                    document.getElementById('currentYouTubeLink').textContent = newLink;
+                    showToast('YouTube link updated successfully!');
+                } else {
+                    throw new Error('Failed to update YouTube link');
+                }
+            } catch (error) {
+                alert('Error updating YouTube link: ' + error.message);
+            }
+        }
+
+        // Update submission status
+        async function updateSubmission(id, action) {
+            if (action === 'delete' && !confirm('Are you sure you want to delete this submission?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/submissions/${id}/${action}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    showToast(`Submission ${action}d successfully!`);
+                    loadSubmissions();
+                    loadStats();
+                } else {
+                    throw new Error(`Failed to ${action} submission`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Utility functions
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'border-yellow-400',
+                'approved': 'border-green-400',
+                'rejected': 'border-red-400',
+                'paid': 'border-blue-400'
+            };
+            return colors[status] || 'border-gray-400';
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': 'bg-yellow-500 text-black',
+                'approved': 'bg-green-500 text-white',
+                'rejected': 'bg-red-500 text-white',
+                'paid': 'bg-blue-500 text-white'
+            };
+            return badges[status] || 'bg-gray-500 text-white';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function openImageModal(imageSrc) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.getElementById('imageModal').classList.add('flex');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.getElementById('imageModal').classList.remove('flex');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/';
+            }
+        }
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            loadSubmissions();
+            loadStats();
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Rise - Earn ₹7 per Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fef7ee',
+                            100: '#fdedd3',
+                            200: '#fbd7a5',
+                            300: '#f8bc6d',
+                            400: '#f59e0b',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'shake': 'shake 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(245, 158, 11, 0.8)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-5px)' },
+                            '75%': { transform: 'translateX(5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .phone-frame {
+            background: linear-gradient(145deg, #1f2937, #374151);
+            border-radius: 2rem;
+            padding: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .phone-screen {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #1f2937;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                        <i class="fas fa-map-marker-alt text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Review Rise</h1>
+                        <p class="text-xs text-gray-600">Earn ₹7 per review</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="#mobile-app" class="text-gray-600 hover:text-gray-900 transition-colors">Mobile App</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
+                    <a href="#faq" class="text-gray-600 hover:text-gray-900 transition-colors">FAQ</a>
+                    <button onclick="scrollToUpload()" class="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="animate-fade-in">
+                <div class="inline-flex items-center bg-gradient-to-r from-amber-100 to-orange-100 rounded-full px-6 py-2 mb-8 border border-amber-200">
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                    <span class="text-amber-800 font-medium text-sm">Live & Paying Users Daily</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                    Earn ₹7 per Review with
+                    <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500 bg-clip-text text-transparent">
+                        Review Rise
+                    </span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                    Upload screenshots, submit details, and get paid automatically. The simplest way to earn money online.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                    <button onclick="scrollToUpload()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 animate-pulse-glow">
+                        Start Earning Now
+                        <i class="fas fa-rocket ml-2"></i>
+                    </button>
+                    <button onclick="scrollToMobileApp()" class="flex items-center text-gray-600 hover:text-gray-900 transition-colors bg-white/50 backdrop-blur-sm px-6 py-4 rounded-xl border border-gray-200 hover:shadow-lg">
+                        <i class="fas fa-mobile-alt text-2xl mr-2"></i>
+                        View Mobile App
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced floating elements with better animations -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-float"></div>
+        <div class="absolute bottom-20 right-10 w-16 h-16 bg-gradient-to-br from-green-400 to-blue-500 rounded-full opacity-20 animate-float" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 right-20 w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full opacity-20 animate-float" style="animation-delay: 2s;"></div>
+    </section>
+
+    <!-- New Mobile App Screenshot Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50" id="mobile-app">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Experience Review Rise</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">See how easy it is to earn money with our mobile-optimized platform</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Mobile Phone Mockup -->
+                <div class="flex justify-center">
+                    <div class="phone-frame animate-float">
+                        <div class="phone-screen w-80 h-[640px] relative">
+                            <div class="phone-notch"></div>
+                            
+                            <!-- Status Bar -->
+                            <div class="flex justify-between items-center px-6 pt-8 pb-4 text-sm text-gray-900">
+                                <span class="font-medium">12:41</span>
+                                <div class="flex items-center space-x-1">
+                                    <i class="fas fa-signal text-xs"></i>
+                                    <i class="fas fa-wifi text-xs"></i>
+                                    <i class="fas fa-battery-three-quarters text-xs"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- App Header -->
+                            <div class="px-6 pb-6">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
+                                        <i class="fas fa-map-marker-alt text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-gray-900">Review Rise</h3>
+                                        <p class="text-gray-600 text-sm">Review do & earn ₹7 — simple & quick</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Highlighted Card -->
+                                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200 shadow-lg mb-6">
+                                    <h4 class="text-lg font-bold text-gray-900 mb-2">Post Positive Reviews & Earn ₹7</h4>
+                                    <p class="text-gray-700 text-sm leading-relaxed">Upload screenshot & get paid automatically once approved.</p>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="space-y-3 mb-6">
+                                    <a href="https://maps.google.com/?q=Review+Rise+Office" target="_blank" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>
+                                        Open Map Link
+                                    </a>
+                                    <button id="copyLinkBtn" onclick="copyLink()" class="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+                                        Copy Link
+                                    </button>
+                                </div>
+                                
+                                <!-- Video Thumbnail -->
+                                <div class="relative rounded-xl overflow-hidden shadow-lg">
+                                    <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" class="block">
+                                        <div class="bg-gradient-to-br from-gray-800 to-gray-900 h-32 flex items-center justify-center relative">
+                                            <div class="absolute inset-0 bg-black/20"></div>
+                                            <div class="relative z-10 w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-xl hover:bg-red-700 transition-colors">
+                                                <i class="fas fa-play text-white text-xl ml-1"></i>
+                                            </div>
+                                            <div class="absolute bottom-3 left-3 text-white text-sm font-medium">Tutorial Video</div>
+                                            <div class="absolute bottom-3 right-3 text-white text-xs bg-black/50 px-2 py-1 rounded">5:42</div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features List -->
+                <div class="space-y-8">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-upload text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Easy Upload Process</h3>
+                            <p class="text-gray-600 leading-relaxed">Simply upload your review screenshot with your details and get paid automatically within 24-48 hours.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-rupee-sign text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Instant Payments</h3>
+                            <p class="text-gray-600 leading-relaxed">Earn ₹7 for each approved review. Money is transferred directly to your UPI account automatically.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Safe & Secure</h3>
+                            <p class="text-gray-600 leading-relaxed">Your data is protected and we've already paid thousands of users. Join our trusted community.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Dashboard -->
+    <section class="py-16 px-4" id="dashboard">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Live Dashboard</h2>
+                <p class="text-gray-600 text-lg">Real-time statistics of our platform</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-upload text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-2" id="totalSubmissions">1,247</h3>
+                        <p class="text-gray-600 font-medium">Total Submissions</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check-circle text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-2" id="approved">1,089</h3>
+                        <p class="text-gray-600 font-medium">Approved</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-rupee-sign text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-4xl font-bold text-gray-900 mb-2" id="paid">₹7,623</h3>
+                        <p class="text-gray-600 font-medium">Total Paid</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Form -->
+    <section class="py-16 px-4" id="upload">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/50 p-8 md:p-12">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Upload Your Screenshot</h2>
+                    <p class="text-gray-600 text-lg">Fill in your details & upload <strong>1 screenshot</strong> to get paid automatically.</p>
+                </div>
+                
+                <form id="uploadForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input type="text" id="userName" placeholder="Enter your name" required
+                               class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-lg">
+                        <!-- Added validation message -->
+                        <p class="text-red-500 text-sm mt-1 hidden" id="nameError">Please enter your full name</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">UPI ID</label>
+                        <input type="text" id="upiId" placeholder="Enter your UPI (example@upi)" required
+                               class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-lg">
+                        <!-- Added validation message -->
+                        <p class="text-red-500 text-sm mt-1 hidden" id="upiError">Please enter a valid UPI ID</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Screenshot Upload</label>
+                        <div class="relative">
+                            <input type="file" id="screenshot" accept="image/*" required
+                                   class="w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Upload a clear screenshot of your positive review (4-5 stars)
+                        </p>
+                        <!-- Added file validation message -->
+                        <p class="text-red-500 text-sm mt-1 hidden" id="fileError">Please upload a screenshot</p>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="submitText">Submit & Get Paid</span>
+                        <i class="fas fa-paper-plane ml-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 px-4 bg-white/30" id="faq">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                <p class="text-gray-600 text-lg">Everything you need to know about Review Rise</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="faq-item bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50">
+                    <button class="faq-question w-full px-6 py-6 text-left flex justify-between items-center hover:bg-gray-50/50 transition-colors rounded-2xl">
+                        <span class="font-semibold text-gray-900 text-lg">How long until payment?</span>
+                        <i class="fas fa-plus text-amber-600 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-6">
+                        <p class="text-gray-600 leading-relaxed">Payments are processed automatically within 24-48 hours after your screenshot is approved. You'll receive the money directly to your UPI ID.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50">
+                    <button class="faq-question w-full px-6 py-6 text-left flex justify-between items-center hover:bg-gray-50/50 transition-colors rounded-2xl">
+                        <span class="font-semibold text-gray-900 text-lg">What screenshot is accepted?</span>
+                        <i class="fas fa-plus text-amber-600 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-6">
+                        <p class="text-gray-600 leading-relaxed">We accept clear screenshots of positive reviews (4-5 stars) posted on Google Maps, Zomato, or other review platforms. The screenshot should show your review text and rating clearly.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50">
+                    <button class="faq-question w-full px-6 py-6 text-left flex justify-between items-center hover:bg-gray-50/50 transition-colors rounded-2xl">
+                        <span class="font-semibold text-gray-900 text-lg">Is this legitimate and safe?</span>
+                        <i class="fas fa-plus text-amber-600 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-6">
+                        <p class="text-gray-600 leading-relaxed">Yes, Review Rise is a legitimate platform. We've paid thousands of users already. Your personal information is kept secure and we only use your UPI ID for payments.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/50">
+                    <button class="faq-question w-full px-6 py-6 text-left flex justify-between items-center hover:bg-gray-50/50 transition-colors rounded-2xl">
+                        <span class="font-semibold text-gray-900 text-lg">How many reviews can I submit per day?</span>
+                        <i class="fas fa-plus text-amber-600 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-6">
+                        <p class="text-gray-600 leading-relaxed">You can submit up to 5 reviews per day. Each approved review earns you ₹7. Make sure each review is genuine and follows platform guidelines.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 via-green-500 to-yellow-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-map-marker-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">Review Rise</h3>
+                            <p class="text-gray-400 text-sm">Earn money by posting reviews</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        The easiest way to earn money online by posting positive reviews. Join thousands of users who are already earning daily.
+                    </p>
+                    <!-- Updated social icons with working links -->
+                    <div class="flex space-x-4">
+                        <a href="https://t.me/reviewrise" target="_blank" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors transform hover:scale-110">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                        <a href="https://wa.me/911234567890" target="_blank" class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition-colors transform hover:scale-110">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="https://instagram.com/reviewrise" target="_blank" class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors transform hover:scale-110">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://youtube.com/@reviewrise" target="_blank" class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors transform hover:scale-110">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#mobile-app" class="hover:text-white transition-colors">Mobile App</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition-colors">How it Works</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Support</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Review Rise. All rights reserved. Made with ❤️ for earning enthusiasts.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 transform scale-95 transition-all duration-300">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Submission Successful!</h3>
+                <p class="text-gray-600 mb-6">Your screenshot has been submitted for review. You'll receive ₹7 in your UPI account within 24-48 hours after approval.</p>
+                <button onclick="closeModal()" class="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300">
+                    Continue Earning
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Added Copy Link Success Toast -->
+    <div id="copyToast" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <i class="fas fa-check mr-2"></i>
+        Link Copied!
+    </div>
+
+    <script>
+        // Smooth scrolling
+        function scrollToUpload() {
+            document.getElementById('upload').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToMobileApp() {
+            document.getElementById('mobile-app').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyLink() {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link).then(() => {
+                const toast = document.getElementById('copyToast');
+                const btn = document.getElementById('copyLinkBtn');
+                
+                // Show toast
+                toast.classList.remove('translate-x-full');
+                btn.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+                btn.classList.add('bg-green-50', 'border-green-300', 'text-green-700');
+                
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                    btn.innerHTML = 'Copy Link';
+                    btn.classList.remove('bg-green-50', 'border-green-300', 'text-green-700');
+                }, 2000);
+            });
+        }
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.parentElement;
+                const answer = faqItem.querySelector('.faq-answer');
+                const icon = button.querySelector('i');
+                
+                // Close other open FAQs
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    if (item !== faqItem) {
+                        item.querySelector('.faq-answer').classList.add('hidden');
+                        item.querySelector('i').classList.remove('fa-minus', 'rotate-180');
+                        item.querySelector('i').classList.add('fa-plus');
+                    }
+                });
+                
+                // Toggle current FAQ
+                answer.classList.toggle('hidden');
+                if (answer.classList.contains('hidden')) {
+                    icon.classList.remove('fa-minus', 'rotate-180');
+                    icon.classList.add('fa-plus');
+                } else {
+                    icon.classList.remove('fa-plus');
+                    icon.classList.add('fa-minus', 'rotate-180');
+                }
+            });
+        });
+
+        const API_BASE = 'http://localhost:5000/api';
+        
+        // Load settings and stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            loadStats();
+        });
+
+        // Load settings from backend
+        async function loadSettings() {
+            try {
+                const mapResponse = await fetch(`${API_BASE}/settings/mapLink`);
+                const mapData = await mapResponse.json();
+                if (mapData.value) {
+                    document.querySelector('a[href*="maps.google.com"]').href = mapData.value;
+                }
+
+                const videoResponse = await fetch(`${API_BASE}/settings/youtubeLink`);
+                const videoData = await videoResponse.json();
+                if (videoData.value) {
+                    document.querySelector('a[href*="youtube.com"]').href = videoData.value;
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // Load statistics from backend
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('totalSubmissions').textContent = stats.total || 0;
+                document.getElementById('approved').textContent = stats.approved || 0;
+                document.getElementById('paid').textContent = `₹${(stats.paid * 7) || 0}`;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const submitText = document.getElementById('submitText');
+            
+            // Enhanced validation
+            const name = document.getElementById('userName').value.trim();
+            const upi = document.getElementById('upiId').value.trim();
+            const file = document.getElementById('screenshot').files[0];
+            
+            let isValid = true;
+            
+            // Name validation
+            if (!name || name.length < 2) {
+                document.getElementById('nameError').classList.remove('hidden');
+                document.getElementById('userName').classList.add('border-red-500', 'animate-shake');
+                isValid = false;
+            } else {
+                document.getElementById('nameError').classList.add('hidden');
+                document.getElementById('userName').classList.remove('border-red-500', 'animate-shake');
+            }
+            
+            // UPI validation
+            if (!upi || !upi.includes('@')) {
+                document.getElementById('upiError').classList.remove('hidden');
+                document.getElementById('upiId').classList.add('border-red-500', 'animate-shake');
+                isValid = false;
+            } else {
+                document.getElementById('upiError').classList.add('hidden');
+                document.getElementById('upiId').classList.remove('border-red-500', 'animate-shake');
+            }
+            
+            // File validation
+            if (!file) {
+                document.getElementById('fileError').classList.remove('hidden');
+                document.getElementById('screenshot').classList.add('border-red-500', 'animate-shake');
+                isValid = false;
+            } else {
+                document.getElementById('fileError').classList.add('hidden');
+                document.getElementById('screenshot').classList.remove('border-red-500', 'animate-shake');
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+            
+            try {
+                // Convert file to base64
+                const base64 = await fileToBase64(file);
+                
+                const response = await fetch(`${API_BASE}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fullName: name,
+                        upiId: upi,
+                        screenshot: base64
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show success modal
+                    document.getElementById('successModal').classList.remove('hidden');
+                    document.getElementById('successModal').classList.add('flex');
+                    
+                    // Reset form
+                    document.getElementById('uploadForm').reset();
+                    
+                    // Reload stats
+                    loadStats();
+                } else {
+                    throw new Error(result.error || 'Submission failed');
+                }
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.innerHTML = 'Submit & Get Paid <i class="fas fa-paper-plane ml-2"></i>';
+            }
+        });
+
+        // Helper function to convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('flex');
+        }
+
+        // Animate stats on scroll
+        function animateStats() {
+            const stats = document.querySelectorAll('#totalSubmissions, #approved');
+            stats.forEach(stat => {
+                const target = parseInt(stat.textContent.replace(/[₹,]/g, ''));
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    if (stat.id === 'paid') {
+                        stat.textContent = `₹${Math.floor(current)}`;
+                    } else {
+                        stat.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 30);
+            });
+        }
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-slide-up');
+                }
+            });
+        });
+
+        // Observe elements for animation
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Initialize stats animation when dashboard is visible
+        const dashboardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    dashboardObserver.unobserve(entry.target);
+                }
+            });
+        });
+
+        dashboardObserver.observe(document.getElementById('dashboard'));
+
+        document.getElementById('screenshot').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    console.log('File uploaded:', file.name, 'Size:', (file.size / 1024).toFixed(2) + 'KB');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.addEventListener('animationend', function(e) {
+            if (e.animationName === 'shake') {
+                e.target.classList.remove('animate-shake');
+            }
+        });
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
