@@ -1,156 +1,241 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
-from pymongo import MongoClient
-from bson import ObjectId
-import os
-from datetime import datetime
+import requests
+import json
+import threading
+import time
+import random
+import binascii
+from byte import Encrypt_ID, encrypt_api
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import uid_generator_pb2
+from AccountPersonalShow_pb2 import AccountPersonalShowInfo
+from secret import key, iv
 
 app = Flask(__name__)
-CORS(app)
 
-# MongoDB connection
-MONGO_URI = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/")
-client = MongoClient(MONGO_URI)
-db = client["review_rise"]
+region_to_endpoint = {
+    "IND": "https://client.ind.freefiremobile.com",
+    "BR": "https://client.us.freefiremobile.com",
+    "US": "https://client.us.freefiremobile.com",
+    "SAC": "https://client.us.freefiremobile.com",
+    "NA": "https://client.us.freefiremobile.com",
+    "EU": "https://clientbp.ggblueshark.com",
+    "ME": "https://clientbp.ggblueshark.com",
+    "ID": "https://clientbp.ggblueshark.com",
+    "TH": "https://clientbp.ggblueshark.com",
+    "VN": "https://clientbp.ggblueshark.com",
+    "SG": "https://clientbp.ggblueshark.com",
+    "BD": "https://clientbp.ggblueshark.com",
+    "PK": "https://clientbp.ggblueshark.com",
+    "MY": "https://clientbp.ggblueshark.com",
+    "PH": "https://clientbp.ggblueshark.com",
+    "RU": "https://clientbp.ggblueshark.com",
+    "AFR": "https://clientbp.ggblueshark.com",
+}
 
-submissions_col = db["submissions"]
-settings_col = db["settings"]
+def get_token_file(region):
+    region = region.upper()
+    if region == "IND":
+        return "token_ind.json"
+    elif region in ["BR", "US", "SAC", "NA"]:
+        return "token_br.json"
+    else:
+        return "token_bd.json"
 
-# Initialize DB with default settings
-def init_db():
-    if settings_col.count_documents({}) == 0:
-        settings_col.insert_many([
-            {"key": "mapLink", "value": "https://maps.google.com/?q=Review+Rise+Office", "updated_at": datetime.utcnow()},
-            {"key": "youtubeLink", "value": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "updated_at": datetime.utcnow()}
-        ])
+def load_tokens(filename):
+    try:
+        with open(filename, "r") as file:
+            data = json.load(file)
+        tokens = [item["token"] for item in data]
+        return tokens
+    except Exception as e:
+        print(f"Error loading tokens from {filename}: {e}")
+        return []
 
-# Helper to serialize MongoDB ObjectId
-def serialize_submission(sub):
-    return {
-        "id": str(sub["_id"]),
-        "fullName": sub["full_name"],
-        "upiId": sub["upi_id"],
-        "screenshot": sub["screenshot"],
-        "status": sub.get("status", "pending"),
-        "createdAt": sub.get("created_at"),
-        "updatedAt": sub.get("updated_at")
+def create_protobuf(akiru_, aditya):
+    message = uid_generator_pb2.uid_generator()
+    message.akiru_ = akiru_
+    message.aditya = aditya
+    return message.SerializeToString()
+
+def protobuf_to_hex(protobuf_data):
+    return binascii.hexlify(protobuf_data).decode()
+
+def decode_hex(hex_string):
+    byte_data = binascii.unhexlify(hex_string.replace(' ', ''))
+    users = AccountPersonalShowInfo()
+    users.ParseFromString(byte_data)
+    return users
+
+def encrypt_aes(hex_data, key, iv):
+    key = key.encode()[:16]
+    iv = iv.encode()[:16]
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    padded_data = pad(bytes.fromhex(hex_data), AES.block_size)
+    encrypted_data = cipher.encrypt(padded_data)
+    return binascii.hexlify(encrypted_data).decode()
+
+def fetch_player_info(uid, region, tokens, api):
+    if not tokens:
+        return None
+
+    token = random.choice(tokens)
+    try:
+        saturn_ = int(uid)
+    except ValueError:
+        return None
+
+    protobuf_data = create_protobuf(saturn_, 1)
+    hex_data = protobuf_to_hex(protobuf_data)
+    encrypted_hex = encrypt_aes(hex_data, key, iv)
+
+    host = api.split("://")[1].split("/")[0]
+
+    headers = {
+        'User-Agent': 'Dalvik/2.1.0 (Linux; U; Android 9; ASUS_Z01QD Build/PI)',
+        'Connection': 'Keep-Alive',
+        'Expect': '100-continue',
+        'Authorization': f'Bearer {token}',
+        'X-Unity-Version': '2018.4.11f1',
+        'X-GA': 'v1 1',
+        'ReleaseVersion': 'OB51',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Host': host,
     }
 
-# API Routes
-@app.route('/api/submit', methods=['POST'])
-def submit_review():
     try:
-        data = request.json
-        full_name = data.get('fullName')
-        upi_id = data.get('upiId')
-        screenshot = data.get('screenshot')
+        response = requests.post(f"{api}/GetPlayerPersonalShow", headers=headers, data=bytes.fromhex(encrypted_hex), timeout=10)
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
 
-        if not all([full_name, upi_id, screenshot]):
-            return jsonify({'error': 'All fields are required'}), 400
+    hex_response = response.content.hex()
 
-        submission = {
-            "full_name": full_name,
-            "upi_id": upi_id,
-            "screenshot": screenshot,
-            "status": "pending",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+    try:
+        account_info = decode_hex(hex_response)
+    except Exception:
+        return None
+
+    if account_info.HasField("basic_info"):
+        basic_info = account_info.basic_info
+        return {
+            "nickname": basic_info.nickname,
+            "level": basic_info.level,
+            "liked": basic_info.liked
         }
+    return None
 
-        submissions_col.insert_one(submission)
+def send_friend_request(uid, token, results, lock, api):
+    encrypted_id = Encrypt_ID(uid)
+    payload = f"08a7c4839f1e10{encrypted_id}1801"
+    encrypted_payload = encrypt_api(payload)
 
-        return jsonify({'message': 'Submission successful', 'status': 'success'}), 201
+    host = api.split("://")[1].split("/")[0]
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    url = f"{api}/RequestAddingFriend"
+    headers = {
+        "Expect": "100-continue",
+        "Authorization": f"Bearer {token}",
+        "X-Unity-Version": "2018.4.11f1",
+        "X-GA": "v1 1",
+        "ReleaseVersion": "OB51",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": "16",
+        "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9; SM-N975F Build/PI)",
+        "Host": host,
+        "Connection": "close",
+        "Accept-Encoding": "gzip, deflate, br"
+    }
 
-@app.route('/api/submissions', methods=['GET'])
-def get_submissions():
     try:
-        submissions = submissions_col.find().sort("created_at", -1)
-        return jsonify([serialize_submission(s) for s in submissions]), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/submissions/<submission_id>/<action>', methods=['POST'])
-def update_submission(submission_id, action):
-    try:
-        valid_actions = ['approve', 'reject', 'paid', 'delete']
-        if action not in valid_actions:
-            return jsonify({'error': 'Invalid action'}), 400
-
-        if action == 'delete':
-            submissions_col.delete_one({"_id": ObjectId(submission_id)})
-        else:
-            status_map = {'approve': 'approved', 'reject': 'rejected', 'paid': 'paid'}
-            new_status = status_map[action]
-            submissions_col.update_one(
-                {"_id": ObjectId(submission_id)},
-                {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
-            )
-
-        return jsonify({'message': f'Submission {action}d successfully'}), 200
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/settings/<key>', methods=['GET', 'POST'])
-def handle_settings(key):
-    try:
-        if request.method == 'GET':
-            setting = settings_col.find_one({"key": key})
-            if setting:
-                return jsonify({'value': setting["value"]}), 200
+        response = requests.post(url, headers=headers, data=bytes.fromhex(encrypted_payload), timeout=10)
+        with lock:
+            if response.status_code == 200:
+                results["success"] += 1
+                print(f"✅ Success #{results['success']}")
             else:
-                return jsonify({'error': 'Setting not found'}), 404
-
-        elif request.method == 'POST':
-            data = request.json
-            value = data.get('value')
-            if not value:
-                return jsonify({'error': 'Value is required'}), 400
-
-            settings_col.update_one(
-                {"key": key},
-                {"$set": {"value": value, "updated_at": datetime.utcnow()}},
-                upsert=True
-            )
-            return jsonify({'message': 'Setting updated successfully'}), 200
-
+                results["failed"] += 1
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error in request: {e}")
+        with lock:
+            results["failed"] += 1
 
-@app.route('/api/stats', methods=['GET'])
-def get_stats():
-    try:
-        total = submissions_col.count_documents({})
-        approved = submissions_col.count_documents({"status": "approved"})
-        rejected = submissions_col.count_documents({"status": "rejected"})
-        paid = submissions_col.count_documents({"status": "paid"})
-        pending = submissions_col.count_documents({"status": "pending"})
+@app.route("/send_requests", methods=["GET"])
+def send_requests():
+    uid = request.args.get("uid")
+    region = request.args.get("region", "").upper()
 
-        return jsonify({
-            'total': total,
-            'approved': approved,
-            'rejected': rejected,
-            'paid': paid,
-            'pending': pending
-        }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    if not uid or not region:
+        return jsonify({"error": "uid and region parameters are required"}), 400
 
-# Serve static files
-@app.route('/')
-def serve_index():
-    with open('static/index.html', 'r') as f:
-        return f.read()
+    if region not in region_to_endpoint:
+        return jsonify({"error": "Unsupported region"}), 400
 
-@app.route('/admin')
-def serve_admin():
-    with open('static/admin.html', 'r') as f:
-        return f.read()
+    token_filename = get_token_file(region)
+    tokens = load_tokens(token_filename)
+    if not tokens:
+        return jsonify({"error": f"No tokens found in {token_filename}"}), 500
 
-if __name__ == '__main__':
-    os.makedirs('static', exist_ok=True)
-    init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    api = region_to_endpoint[region]
+
+    # Fetch player info first
+    player_info = fetch_player_info(uid, region, tokens, api)
+    if not player_info:
+        return jsonify({"error": "Failed to fetch player info"}), 500
+
+    results = {"success": 0, "failed": 0}
+    MAX_SUCCESS = 120
+    BATCH_SIZE = 50
+    DELAY = 0.3
+    lock = threading.Lock()
+
+    def start_batch(batch_tokens):
+        batch_threads = []
+        for token in batch_tokens:
+            with lock:
+                if results["success"] >= MAX_SUCCESS:
+                    print(f"Reached {MAX_SUCCESS} successes. Stopping further requests.")
+                    return False
+            thread = threading.Thread(target=send_friend_request, args=(uid, token, results, lock, api))
+            batch_threads.append(thread)
+            thread.start()
+            time.sleep(DELAY)
+
+        for thread in batch_threads:
+            thread.join()
+        return True
+
+    batch_num = 1
+    for i in range(0, len(tokens), BATCH_SIZE):
+        if results["success"] >= MAX_SUCCESS:
+            break
+        batch_tokens = tokens[i:i + BATCH_SIZE]
+        if not batch_tokens:
+            break
+        print(f"Starting batch {batch_num} (requests {i+1} to {min(i + BATCH_SIZE, len(tokens))})")
+        continue_batch = start_batch(batch_tokens)
+        if not continue_batch:
+            break
+        print(f"Batch {batch_num} completed. Success so far: {results['success']}")
+        if results["success"] >= MAX_SUCCESS:
+            break
+        batch_num += 1
+
+    total_requests = results["success"] + results["failed"]
+    status = 1 if results["success"] > 0 else 2
+
+    response_data = {
+        "nickname": player_info["nickname"],
+        "level": player_info["level"],
+        "likes": player_info["liked"],
+        "success_count": results["success"],
+        "failed_count": results["failed"],
+        "total_requests": total_requests,
+        "status": status
+    }
+
+    return jsonify(response_data)
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
