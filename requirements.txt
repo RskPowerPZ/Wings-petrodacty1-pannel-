@@ -1,5 +1,8 @@
 Flask
 requests
 pycryptodome
-protobuf
-google
+
+# Protobuf dependencies
+protobuf==4.25.3
+google==3.0.0
+googleapis-common-protos
